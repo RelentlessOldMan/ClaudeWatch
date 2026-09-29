@@ -25,7 +25,12 @@ public static class StatusReader
         string? modelId = null;
         string? cwd = null;
         string? transcriptPath = null;
-        bool exceeds200k = false;
+
+        // Context data straight from Claude Code (authoritative). context_window_size
+        // is the real window (200k vs 1M); used_percentage matches Claude's own meter.
+        long? cwSize = null;
+        long? cwUsed = null;
+        int? cwPercent = null;
 
         try
         {
@@ -48,19 +53,26 @@ public static class StatusReader
 
             transcriptPath = GetString(root, "transcript_path");
 
-            if (root.TryGetProperty("exceeds_200k_tokens", out var ex) &&
-                (ex.ValueKind == JsonValueKind.True || ex.ValueKind == JsonValueKind.False))
-                exceeds200k = ex.GetBoolean();
+            if (root.TryGetProperty("context_window", out var cw) && cw.ValueKind == JsonValueKind.Object)
+            {
+                cwSize = PositiveOrNull(GetLong(cw, "context_window_size"));
+                // total_input_tokens = tokens currently in the window (incl. cache).
+                cwUsed = PositiveOrNull(GetLong(cw, "total_input_tokens"));
+                cwPercent = GetPercent(cw, "used_percentage");
+            }
         }
         catch (Exception e)
         {
             Log.Error("Failed to parse status stdin JSON", e);
         }
 
-        var (used, activeTool, lastTool) = ReadTranscript(transcriptPath);
+        // The transcript is still needed for tool activity (not in stdin) and as a
+        // fallback for token usage on older Claude Code versions without context_window.
+        var (transcriptUsed, activeTool, lastTool) = ReadTranscript(transcriptPath);
 
-        long capacity = InferCapacity(modelId, modelDisplay, exceeds200k, settings);
-        int? percent = ComputePercent(used, capacity);
+        long capacity = cwSize ?? InferCapacity(modelId, modelDisplay, settings);
+        long? used = cwUsed ?? transcriptUsed;
+        int? percent = cwPercent ?? ComputePercent(used, capacity);
 
         var (fullDir, dirName) = SplitDirectory(cwd);
 
@@ -80,15 +92,16 @@ public static class StatusReader
     }
 
     /// <summary>
-    /// Determines the model's context window. A size token in the model id or display
-    /// name is trusted first (e.g. "[1m]", "(1M context)", "(200k)"); otherwise the
-    /// standard 200k default, bumped to 1M if usage already exceeds 200k.
+    /// Fallback context window for older Claude Code versions that don't send
+    /// <c>context_window</c>. A size token in the model id or display name is trusted
+    /// (e.g. "[1m]", "(1M context)", "(200k)"); otherwise the standard 200k default.
+    /// Deliberately does NOT depend on current usage, so the window can't flip-flop.
     /// </summary>
-    private static long InferCapacity(string? modelId, string? modelDisplay, bool exceeds200k, Settings settings)
+    private static long InferCapacity(string? modelId, string? modelDisplay, Settings settings)
     {
         return ParseSizeToken(modelDisplay)
                ?? ParseSizeToken(modelId)
-               ?? (exceeds200k ? 1_000_000 : settings.DefaultContextCapacity);
+               ?? settings.DefaultContextCapacity;
     }
 
     /// <summary>
@@ -277,4 +290,15 @@ public static class StatusReader
         obj.TryGetProperty(name, out var v) && v.ValueKind == JsonValueKind.Number && v.TryGetInt64(out var n)
             ? n
             : 0;
+
+    private static long? PositiveOrNull(long v) => v > 0 ? v : null;
+
+    /// <summary>Reads a percentage (may be null / fractional), rounded and clamped to 0-100.</summary>
+    private static int? GetPercent(JsonElement obj, string name)
+    {
+        if (!obj.TryGetProperty(name, out var v) || v.ValueKind != JsonValueKind.Number ||
+            !v.TryGetDouble(out var d))
+            return null;
+        return Math.Clamp((int)Math.Round(d, MidpointRounding.AwayFromZero), 0, 100);
+    }
 }
