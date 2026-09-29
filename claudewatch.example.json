@@ -1,0 +1,25 @@
+{
+  "_comment": "Copy to claudewatch.json (beside the exe, or in %USERPROFILE%\\.claude\\), or point %CLAUDEWATCH_CONFIG% at it. Every key is optional; omitted keys keep their default (shown below). Colors accept names (e.g. brightCyan, orange) or raw ANSI SGR params (e.g. 38;5;208). 'default'/'none'/'' mean no color. Set NO_COLOR=1 in the environment to disable all color.",
+
+  "contextBarWidth": 10,
+  "useUnicode": true,
+  "useColor": true,
+  "showContextLabel": true,
+  "showContextCapacity": true,
+  "showIdle": true,
+  "directoryMode": "NameOnly",
+
+  "contextMedPercent": 50,
+  "contextHighPercent": 80,
+
+  "colors": {
+    "model": "brightCyan",
+    "directory": "brightBlue",
+    "activeTool": "brightWhite",
+    "idle": "brightBlack",
+    "separator": "brightBlack",
+    "contextLow": "green",
+    "contextMed": "orange",
+    "contextHigh": "red"
+  }
+}

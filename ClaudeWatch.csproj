@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>claudewatch</AssemblyName>
+    <RootNamespace>ClaudeWatch</RootNamespace>
+
+    <!-- Native AOT: tiny, self-contained native exe with ~5-10ms cold start. -->
+    <PublishAot>true</PublishAot>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <StripSymbols>true</StripSymbols>
+    <OptimizationPreference>Speed</OptimizationPreference>
+
+    <!-- We parse JSON via JsonDocument (DOM), which is AOT-safe without source generators. -->
+    <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
+  </PropertyGroup>
+
+</Project>

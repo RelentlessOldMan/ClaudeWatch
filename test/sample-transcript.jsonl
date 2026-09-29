@@ -1,0 +1,4 @@
+{"type":"user","message":{"role":"user","content":[{"type":"text","text":"find the config"}]}}
+{"type":"assistant","message":{"role":"assistant","model":"claude-opus-4-8","content":[{"type":"text","text":"Let me search."},{"type":"tool_use","id":"tool_1","name":"Grep","input":{}}],"usage":{"input_tokens":50000,"cache_read_input_tokens":30000,"cache_creation_input_tokens":4000,"output_tokens":120}}}
+{"type":"user","message":{"role":"user","content":[{"type":"tool_result","tool_use_id":"tool_1","content":"match found"}]}}
+{"type":"assistant","message":{"role":"assistant","model":"claude-opus-4-8","content":[{"type":"text","text":"Now editing."},{"type":"tool_use","id":"tool_2","name":"Edit","input":{}}],"usage":{"input_tokens":60000,"cache_read_input_tokens":22000,"cache_creation_input_tokens":2000,"output_tokens":80}}}

@@ -1,0 +1,13 @@
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# .NET build output
+bin/
+obj/
+dist/
+
+# Diagnostics
+*.log
