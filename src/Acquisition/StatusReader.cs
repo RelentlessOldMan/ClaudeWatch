@@ -72,7 +72,11 @@ public static class StatusReader
 
         long capacity = cwSize ?? InferCapacity(modelId, modelDisplay, settings);
         long? used = cwUsed ?? transcriptUsed;
-        int? percent = cwPercent ?? ComputePercent(used, capacity);
+        // Derive the percentage from the same token count we display, so the label, bar,
+        // and percent always agree. Claude's pre-calculated used_percentage can briefly
+        // disagree with the reported token count in transient states (e.g. right after
+        // /compact), so it's only a fallback for when we have no token count at all.
+        int? percent = ComputePercent(used, capacity) ?? cwPercent;
 
         var (fullDir, dirName) = SplitDirectory(cwd);
 
