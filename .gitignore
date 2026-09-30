@@ -11,3 +11,6 @@ dist/
 
 # Diagnostics
 *.log
+
+# Transient commit-message files
+*.tmp
