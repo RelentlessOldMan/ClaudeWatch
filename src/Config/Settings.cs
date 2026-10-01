@@ -20,6 +20,7 @@ public sealed record Palette
     public string Model { get; init; } = "brightCyan";
     public string Directory { get; init; } = "brightBlue";
     public string ActiveTool { get; init; } = "brightWhite";
+    public string Working { get; init; } = "brightWhite";
     public string Idle { get; init; } = "brightBlack";
     public string Separator { get; init; } = "brightBlack";
 
@@ -43,6 +44,9 @@ public sealed record Settings
     public bool ShowContextLabel { get; init; } = true;
     public bool ShowContextCapacity { get; init; } = true;
     public bool ShowIdle { get; init; } = true;
+
+    /// <summary>Label shown when Claude is working but no named tool is running.</summary>
+    public string WorkingText { get; init; } = "Working";
     public DirectoryMode DirectoryMode { get; init; } = DirectoryMode.NameOnly;
 
     /// <summary>Fallback context window when it cannot be inferred from the model.</summary>

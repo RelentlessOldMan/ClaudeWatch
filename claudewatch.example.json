@@ -7,6 +7,7 @@
   "showContextLabel": true,
   "showContextCapacity": true,
   "showIdle": true,
+  "workingText": "Working",
   "directoryMode": "NameOnly",
 
   "contextMedPercent": 50,
@@ -16,6 +17,7 @@
     "model": "brightCyan",
     "directory": "brightBlue",
     "activeTool": "brightWhite",
+    "working": "brightWhite",
     "idle": "brightBlack",
     "separator": "brightBlack",
     "contextLow": "green",

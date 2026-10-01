@@ -30,4 +30,11 @@ public sealed class ClaudeStatus
 
     /// <summary>Most recently used tool, regardless of whether it is still running (spec §7.2).</summary>
     public string? LastTool { get; init; }
+
+    /// <summary>
+    /// True when Claude owes a response — the last transcript entry is a user message
+    /// (a fresh prompt or an unanswered tool result), i.e. the spinner is still going.
+    /// Distinguishes "working between tools" from genuinely idle/waiting for the user.
+    /// </summary>
+    public bool TurnInProgress { get; init; }
 }

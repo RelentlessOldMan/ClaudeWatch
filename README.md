@@ -22,7 +22,9 @@ then **red** — so a filling context window is obvious at a glance.
   rounded percentage — the whole section colored by severity. Shows
   `Context (?/…) [??????????] ?%` when usage is unavailable.
 - **Directory** — the final component of the working directory (`?` if unknown).
-- **Activity** — the tool Claude is currently running, or `Idle` when nothing is running.
+- **Activity** — the tool Claude is currently running (`Bash`, `Edit`, …); `Working` when
+  Claude is responding between tools (the spinner is still going); or `Idle` when the turn
+  is finished and it's waiting for you.
 
 ## How it works
 

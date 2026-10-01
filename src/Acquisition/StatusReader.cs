@@ -68,7 +68,7 @@ public static class StatusReader
 
         // The transcript is still needed for tool activity (not in stdin) and as a
         // fallback for token usage on older Claude Code versions without context_window.
-        var (transcriptUsed, activeTool, lastTool) = ReadTranscript(transcriptPath);
+        var (transcriptUsed, activeTool, lastTool, turnInProgress) = ReadTranscript(transcriptPath);
 
         long capacity = cwSize ?? InferCapacity(modelId, modelDisplay, settings);
         long? used = cwUsed ?? transcriptUsed;
@@ -92,6 +92,7 @@ public static class StatusReader
             WorkingDirectoryName = dirName,
             ActiveTool = activeTool,
             LastTool = lastTool,
+            TurnInProgress = turnInProgress,
         };
     }
 
@@ -159,19 +160,19 @@ public static class StatusReader
     }
 
     /// <summary>
-    /// Reads the tail of the transcript JSONL to recover current context size and
-    /// tool activity. Returns (contextUsed, activeTool, lastTool), any of which may
-    /// be null. Never throws.
+    /// Reads the tail of the transcript JSONL to recover current context size, tool
+    /// activity, and whether Claude's turn is still in progress. Any of the first three
+    /// may be null. Never throws.
     /// </summary>
-    private static (long? used, string? active, string? last) ReadTranscript(string? path)
+    private static (long? used, string? active, string? last, bool turnInProgress) ReadTranscript(string? path)
     {
         if (string.IsNullOrWhiteSpace(path))
-            return (null, null, null);
+            return (null, null, null, false);
 
         string text;
         try
         {
-            if (!File.Exists(path)) return (null, null, null);
+            if (!File.Exists(path)) return (null, null, null, false);
             using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             long length = fs.Length;
             int toRead = (int)Math.Min(length, TranscriptTailBytes);
@@ -189,12 +190,13 @@ public static class StatusReader
         catch (Exception e)
         {
             Log.Error("Failed to read transcript tail", e);
-            return (null, null, null);
+            return (null, null, null, false);
         }
 
         long? used = null;
         var toolOrder = new List<(string id, string name)>(); // tool_use blocks in order
         var answered = new HashSet<string>();                 // tool_use_ids that got a result
+        string? lastRole = null;                              // role of the last user/assistant entry
 
         foreach (var raw in text.Split('\n'))
         {
@@ -211,6 +213,7 @@ public static class StatusReader
 
                 if (type == "assistant")
                 {
+                    lastRole = "assistant";
                     // Latest usage wins (forward scan) -> current context occupancy.
                     if (message.TryGetProperty("usage", out var usage) && usage.ValueKind == JsonValueKind.Object)
                     {
@@ -236,6 +239,7 @@ public static class StatusReader
                 }
                 else if (type == "user")
                 {
+                    lastRole = "user";
                     // Record tool_results so we can tell which tool_use is still pending.
                     if (message.TryGetProperty("content", out var content) && content.ValueKind == JsonValueKind.Array)
                     {
@@ -270,7 +274,11 @@ public static class StatusReader
             }
         }
 
-        return (used, activeTool, lastTool);
+        // A trailing user entry (fresh prompt or an unanswered tool result) means Claude
+        // still owes a response — the turn is in progress.
+        bool turnInProgress = lastRole == "user";
+
+        return (used, activeTool, lastTool, turnInProgress);
     }
 
     // U+FEFF (BOM) and U+200B (zero-width space) are not stripped by string.Trim()
