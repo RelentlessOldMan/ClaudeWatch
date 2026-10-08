@@ -5,7 +5,8 @@ namespace ClaudeWatch.Rendering;
 /// <summary>
 /// Renders the working directory (spec §6). By default shows only final path
 /// components to stay compact: "project : current" when Claude has cd'd away from the
-/// directory it was launched in, otherwise just the one name. Narrow tiers drop the
+/// directory it was launched in, otherwise just the one name (also when both folders
+/// share a name, e.g. bob/bob, where "bob : bob" would add nothing). Narrow tiers drop the
 /// project part. "?" when the directory cannot be determined.
 /// </summary>
 public sealed class DirectoryComponent : IStatusComponent
@@ -23,7 +24,8 @@ public sealed class DirectoryComponent : IStatusComponent
             text = string.IsNullOrWhiteSpace(st.WorkingDirectoryName) ? "?" : st.WorkingDirectoryName!;
             bool roomy = ctx.Level is DetailLevel.Normal or DetailLevel.ModeratelyNarrow;
             if (roomy && !string.IsNullOrWhiteSpace(st.ProjectDirectoryName)
-                      && !SamePath(st.ProjectDirectory, st.WorkingDirectory))
+                      && !SamePath(st.ProjectDirectory, st.WorkingDirectory)
+                      && !string.Equals(st.ProjectDirectoryName, text, StringComparison.OrdinalIgnoreCase))
                 text = $"{st.ProjectDirectoryName} : {text}";
         }
 
