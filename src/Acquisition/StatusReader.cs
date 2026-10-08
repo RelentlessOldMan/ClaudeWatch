@@ -24,6 +24,7 @@ public static class StatusReader
         string? modelDisplay = null;
         string? modelId = null;
         string? cwd = null;
+        string? projectDir = null;
         string? transcriptPath = null;
 
         // Context data straight from Claude Code (authoritative). context_window_size
@@ -46,10 +47,14 @@ public static class StatusReader
                 modelId = GetString(model, "id");
             }
 
-            // Prefer the workspace's current dir; fall back to top-level cwd.
+            // current_dir follows the shell as Claude cd's around; project_dir is where
+            // Claude Code was launched and stays fixed. Fall back to top-level cwd.
             if (root.TryGetProperty("workspace", out var ws) && ws.ValueKind == JsonValueKind.Object)
-                cwd = GetString(ws, "current_dir") ?? GetString(ws, "project_dir");
-            cwd ??= GetString(root, "cwd");
+            {
+                cwd = GetString(ws, "current_dir");
+                projectDir = GetString(ws, "project_dir");
+            }
+            cwd ??= GetString(root, "cwd") ?? projectDir;
 
             transcriptPath = GetString(root, "transcript_path");
 
@@ -79,6 +84,7 @@ public static class StatusReader
         int? percent = ComputePercent(used, capacity) ?? cwPercent;
 
         var (fullDir, dirName) = SplitDirectory(cwd);
+        var (projectFull, projectName) = SplitDirectory(projectDir);
 
         return new ClaudeStatus
         {
@@ -90,6 +96,8 @@ public static class StatusReader
             ContextPercent = percent,
             WorkingDirectory = fullDir,
             WorkingDirectoryName = dirName,
+            ProjectDirectory = projectFull,
+            ProjectDirectoryName = projectName,
             ActiveTool = activeTool,
             LastTool = lastTool,
             TurnInProgress = turnInProgress,

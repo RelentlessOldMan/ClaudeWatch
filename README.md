@@ -21,7 +21,9 @@ then **red** — so a filling context window is obvious at a glance.
 - **Context** — usage over the window size (`Context (120k/1M)`), a fill bar, and the
   rounded percentage — the whole section colored by severity. Shows
   `Context (?/…) [??????????] ?%` when usage is unavailable.
-- **Directory** — the final component of the working directory (`?` if unknown).
+- **Directory** — the folder Claude Code was launched in; when Claude has `cd`'d somewhere
+  else, `project : current` (e.g. `myTunes : MusicMaker`). Narrow terminals show just the
+  current folder. `?` if unknown.
 - **Activity** — the tool Claude is currently running (`Bash`, `Edit`, …); `Working` when
   Claude is responding between tools (the spinner is still going); or `Idle` when the turn
   is finished and it's waiting for you.

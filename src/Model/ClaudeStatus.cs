@@ -25,6 +25,12 @@ public sealed class ClaudeStatus
     /// <summary>Final path component of <see cref="WorkingDirectory"/>. Null if unknown.</summary>
     public string? WorkingDirectoryName { get; init; }
 
+    /// <summary>Directory Claude Code was launched in; stable for the session. Null if unknown.</summary>
+    public string? ProjectDirectory { get; init; }
+
+    /// <summary>Final path component of <see cref="ProjectDirectory"/>. Null if unknown.</summary>
+    public string? ProjectDirectoryName { get; init; }
+
     /// <summary>Tool believed to be executing right now, or null if idle/unknown (spec §7.1).</summary>
     public string? ActiveTool { get; init; }
 
