@@ -6,7 +6,7 @@ answers four questions at a glance:
 **What model am I using? · How full is my context? · Where am I working? · What is Claude doing?**
 
 ```text
-Opus 4.8 │ Context (120k/1M) [████░░░░░░] 42% │ Weekly Usage 41% │ CodeCompass │ Edit
+Opus 4.8 │ Context (120k/1M) [████░░░░░░] 42% │ Week 41% │ CodeCompass │ Edit
 ```
 
 The context section is tinted by usage severity — **green** up to 50%, **orange** to 80%,
@@ -14,14 +14,14 @@ then **red** — so a filling context window is obvious at a glance.
 
 ## What it shows
 
-`MODEL │ CONTEXT │ WEEKLY USAGE │ DIRECTORY │ ACTIVITY`
+`MODEL │ CONTEXT │ WEEK │ DIRECTORY │ ACTIVITY`
 
 - **Model** — the model name Claude Code reports, with any trailing window note stripped
   (`Opus 4.8 (1M context)` → `Opus 4.8`). `Model ?` if unknown.
 - **Context** — usage over the window size (`Context (120k/1M)`), a fill bar, and the
   rounded percentage — the whole section colored by severity. Shows
   `Context (?/…) [??????????] ?%` when usage is unavailable.
-- **Weekly Usage** — how much of your 7-day plan usage limit is spent (`Weekly Usage 41%`), tinted
+- **Week** — how much of your 7-day plan usage limit is spent (`Week 41%`), tinted
   with the same green/orange/red thresholds as context. Claude Code sends this only to
   Pro/Max subscribers, and only after the session's first response; until then the
   field is simply hidden.
