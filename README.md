@@ -1,34 +1,34 @@
-# ClaudeWatch ðŸ‘ï¸
+# ClaudeWatch 👁️
 
 **A tiny, fast, colored HUD for [Claude Code](https://claude.com/claude-code).** It
 answers four questions at a glance:
 
-**What model am I using? Â· How full is my context? Â· Where am I working? Â· What is Claude doing?**
+**What model am I using? · How full is my context? · Where am I working? · What is Claude doing?**
 
 ```text
-Opus 4.8 â”‚ Context (120k/1M) [â–ˆâ–ˆâ–ˆâ–ˆâ–‘â–‘â–‘â–‘â–‘â–‘] 42% â”‚ CodeCompass â”‚ Edit
+Opus 4.8 │ Context (120k/1M) [████░░░░░░] 42% │ Week 41% │ CodeCompass │ Edit
 ```
 
-The context section is tinted by usage severity â€” **green** up to 50%, **orange** to 80%,
-then **red** â€” so a filling context window is obvious at a glance.
+The context section is tinted by usage severity — **green** up to 50%, **orange** to 80%,
+then **red** — so a filling context window is obvious at a glance.
 
 ## What it shows
 
-`MODEL â”‚ CONTEXT â”‚ DIRECTORY â”‚ ACTIVITY`
+`MODEL │ CONTEXT │ WEEK │ DIRECTORY │ ACTIVITY`
 
-- **Model** â€” the model name Claude Code reports, with any trailing window note stripped
-  (`Opus 4.8 (1M context)` â†’ `Opus 4.8`). `Model ?` if unknown.
-- **Context** â€” usage over the window size (`Context (120k/1M)`), a fill bar, and the
-  rounded percentage â€” the whole section colored by severity. Shows
-  `Context (?/â€¦) [??????????] ?%` when usage is unavailable.
-- **Week** â€” how much of your 7-day plan usage limit is spent (`Week 41%`), tinted
+- **Model** — the model name Claude Code reports, with any trailing window note stripped
+  (`Opus 4.8 (1M context)` → `Opus 4.8`). `Model ?` if unknown.
+- **Context** — usage over the window size (`Context (120k/1M)`), a fill bar, and the
+  rounded percentage — the whole section colored by severity. Shows
+  `Context (?/…) [??????????] ?%` when usage is unavailable.
+- **Week** — how much of your 7-day plan usage limit is spent (`Week 41%`), tinted
   with the same green/orange/red thresholds as context. Claude Code sends this only to
   Pro/Max subscribers, and only after the session's first response; until then the
   field is simply hidden.
-- **Directory** â€” the folder Claude Code was launched in; when Claude has `cd`'d somewhere
+- **Directory** — the folder Claude Code was launched in; when Claude has `cd`'d somewhere
   else, `project : current` (e.g. `myTunes : MusicMaker`). Narrow terminals show just the
   current folder. `?` if unknown.
-- **Activity** â€” the tool Claude is currently running (`Bash`, `Edit`, â€¦); `Working` when
+- **Activity** — the tool Claude is currently running (`Bash`, `Edit`, …); `Working` when
   Claude is responding between tools (the spinner is still going); or `Idle` when the turn
   is finished and it's waiting for you.
 
@@ -37,10 +37,10 @@ then **red** â€” so a filling context window is obvious at a glance.
 Claude Code invokes the configured status-line command on each refresh, passing a JSON
 blob on **stdin** (model, workspace, transcript path, ...). ClaudeWatch:
 
-1. Parses that JSON â€” including the `context_window` object, which is authoritative:
+1. Parses that JSON — including the `context_window` object, which is authoritative:
    `context_window_size` (the real 200k vs 1M window), `used_percentage` (matches Claude
    Code's own meter), and `total_input_tokens` (tokens currently in the window).
-2. Reads the **tail** of the session transcript (a small, cheap read) for tool activity â€”
+2. Reads the **tail** of the session transcript (a small, cheap read) for tool activity —
    the current/most-recent tool isn't in the stdin payload. On older Claude Code versions
    that predate `context_window`, the transcript also backfills the token usage, and the
    window falls back to a size token in the model name (`[1m]`, `(1M context)`, `(200k)`)
@@ -48,8 +48,8 @@ blob on **stdin** (model, workspace, transcript path, ...). ClaudeWatch:
 3. Renders a single line to **stdout**. Nothing else is ever written to stdout;
    diagnostics go to `%TEMP%\claudewatch.log`.
 
-It never makes network calls, spawns subprocesses, or scans the repo (spec Â§12), and it
-degrades gracefully â€” any missing field becomes a placeholder rather than an error. Because
+It never makes network calls, spawns subprocesses, or scans the repo (spec §12), and it
+degrades gracefully — any missing field becomes a placeholder rather than an error. Because
 the window size comes straight from Claude Code, it stays correct and stable across
 `/compact` and session restarts rather than guessing from current usage.
 
@@ -58,10 +58,10 @@ the window size comes straight from Claude Code, it stays correct and stable acr
 The line compresses in stages as width shrinks, always keeping the percentage:
 
 ```text
-Opus 4.8 â”‚ Context (120k/1M) [â–ˆâ–ˆâ–ˆâ–ˆâ–‘â–‘â–‘â–‘â–‘â–‘] 42% â”‚ CodeCompass â”‚ Edit   (normal)
-Opus 4.8 â”‚ Ctx (120k/1M) [â–ˆâ–ˆâ–‘â–‘â–‘] 42% â”‚ CodeCompass â”‚ Edit            (moderately narrow)
-Opus 4.8 â”‚ Ctx 42% â”‚ CodeCompass â”‚ Edit                              (narrow)
-Opus 4.8 â”‚ 42% â”‚ CodeCompass â”‚ Edit                                  (very narrow)
+Opus 4.8 │ Context (120k/1M) [████░░░░░░] 42% │ CodeCompass │ Edit   (normal)
+Opus 4.8 │ Ctx (120k/1M) [██░░░] 42% │ CodeCompass │ Edit            (moderately narrow)
+Opus 4.8 │ Ctx 42% │ CodeCompass │ Edit                              (narrow)
+Opus 4.8 │ 42% │ CodeCompass │ Edit                                  (very narrow)
 ```
 
 Color escape codes don't count toward width, so the tiers fit correctly.
@@ -87,7 +87,7 @@ Key options: `contextBarWidth` (default 10), `useColor`, `useUnicode`, `showCont
 
 ## Architecture
 
-Data acquisition is kept separate from presentation (spec Â§10), and each field is an
+Data acquisition is kept separate from presentation (spec §10), and each field is an
 independent, swappable component:
 
 ```
@@ -110,7 +110,7 @@ src/
 ```
 
 Adding a future indicator (cost, git, session time, ...) means implementing
-`IStatusComponent` and registering it in `StatusLineRenderer` â€” existing components are
+`IStatusComponent` and registering it in `StatusLineRenderer` — existing components are
 untouched.
 
 ## Build
@@ -146,8 +146,8 @@ both the raw ANSI output and a color-stripped view.
 
 ## Contributing
 
-This is a personal tool, published as-is â€” **issues and pull requests aren't accepted** (PRs auto-close). Fork it and make it your own. ðŸ‘ï¸
+This is a personal tool, published as-is — **issues and pull requests aren't accepted** (PRs auto-close). Fork it and make it your own. 👁️
 
 ## License
 
-MIT â€” see [LICENSE](LICENSE). Â© 2026 RelentlessOldMan.
+MIT — see [LICENSE](LICENSE). © 2026 RelentlessOldMan.
