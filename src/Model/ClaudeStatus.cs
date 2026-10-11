@@ -19,6 +19,12 @@ public sealed class ClaudeStatus
     /// <summary>Whole-number percentage (0-100) of context used. Null if unknown.</summary>
     public int? ContextPercent { get; init; }
 
+    /// <summary>
+    /// Whole-number percentage of the 7-day plan rate limit used. Null when Claude Code
+    /// doesn't send it (non-subscribers, or before the first API response).
+    /// </summary>
+    public int? WeeklyPercent { get; init; }
+
     /// <summary>Full working directory path (retained for future/diagnostic use, spec §6.1).</summary>
     public string? WorkingDirectory { get; init; }
 

@@ -71,6 +71,7 @@ public static class ConfigLoader
             ShowContextLabel = Bool(root, "showContextLabel", s.ShowContextLabel),
             ShowContextCapacity = Bool(root, "showContextCapacity", s.ShowContextCapacity),
             ShowIdle = Bool(root, "showIdle", s.ShowIdle),
+            ShowWeeklyUsage = Bool(root, "showWeeklyUsage", s.ShowWeeklyUsage),
             WorkingText = Str(root, "workingText") ?? s.WorkingText,
             ContextMedPercent = Int(root, "contextMedPercent", s.ContextMedPercent),
             ContextHighPercent = Int(root, "contextHighPercent", s.ContextHighPercent),

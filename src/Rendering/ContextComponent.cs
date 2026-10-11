@@ -78,7 +78,8 @@ public sealed class ContextComponent : IStatusComponent
         return sb.ToString();
     }
 
-    private static string SeverityColor(int? pct, Settings s)
+    /// <summary>Green/orange/red by the configured thresholds; shared with other % fields.</summary>
+    internal static string SeverityColor(int? pct, Settings s)
     {
         if (pct is null) return s.Colors.Idle; // dim when usage is unknown
         if (pct.Value > s.ContextHighPercent) return s.Colors.ContextHigh;

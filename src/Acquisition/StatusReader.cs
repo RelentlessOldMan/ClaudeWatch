@@ -32,6 +32,7 @@ public static class StatusReader
         long? cwSize = null;
         long? cwUsed = null;
         int? cwPercent = null;
+        int? weeklyPercent = null;
 
         try
         {
@@ -65,6 +66,11 @@ public static class StatusReader
                 cwUsed = PositiveOrNull(GetLong(cw, "total_input_tokens"));
                 cwPercent = GetPercent(cw, "used_percentage");
             }
+
+            // Pro/Max only, and only after the first API response; may be absent.
+            if (root.TryGetProperty("rate_limits", out var rl) && rl.ValueKind == JsonValueKind.Object &&
+                rl.TryGetProperty("seven_day", out var week) && week.ValueKind == JsonValueKind.Object)
+                weeklyPercent = GetPercent(week, "used_percentage");
         }
         catch (Exception e)
         {
@@ -94,6 +100,7 @@ public static class StatusReader
             // this lets the context label show the window size (e.g. "Context (1M)").
             ContextCapacity = capacity,
             ContextPercent = percent,
+            WeeklyPercent = weeklyPercent,
             WorkingDirectory = fullDir,
             WorkingDirectoryName = dirName,
             ProjectDirectory = projectFull,

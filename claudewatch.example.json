@@ -7,6 +7,7 @@
   "showContextLabel": true,
   "showContextCapacity": true,
   "showIdle": true,
+  "showWeeklyUsage": true,
   "workingText": "Working",
   "directoryMode": "NameOnly",
 

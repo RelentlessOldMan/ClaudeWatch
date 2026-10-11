@@ -42,6 +42,7 @@ public sealed class StatusLineRenderer
     {
         new ModelComponent(),
         new ContextComponent(),
+        new WeeklyUsageComponent(),
         new DirectoryComponent(),
         new ToolActivityComponent(),
     };
