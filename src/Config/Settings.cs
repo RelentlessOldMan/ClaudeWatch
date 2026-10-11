@@ -45,7 +45,7 @@ public sealed record Settings
     public bool ShowContextCapacity { get; init; } = true;
     public bool ShowIdle { get; init; } = true;
 
-    /// <summary>Show 7-day plan usage ("Week 41%") when Claude Code provides it.</summary>
+    /// <summary>Show 7-day plan usage ("Weekly Usage 41%") when Claude Code provides it.</summary>
     public bool ShowWeeklyUsage { get; init; } = true;
 
     /// <summary>Label shown when Claude is working but no named tool is running.</summary>

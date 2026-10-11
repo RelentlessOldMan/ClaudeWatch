@@ -1,7 +1,7 @@
 namespace ClaudeWatch.Rendering;
 
 /// <summary>
-/// Renders the 7-day plan usage ("Week 41%"), tinted with the same severity colors and
+/// Renders the 7-day plan usage ("Weekly Usage 41%"), tinted with the same severity colors and
 /// thresholds as the context section. Claude Code only sends this for Pro/Max
 /// subscribers and only after the first API response, so the field is omitted
 /// entirely when the data is absent rather than showing a placeholder.
@@ -15,8 +15,9 @@ public sealed class WeeklyUsageComponent : IStatusComponent
 
         string text = ctx.Level switch
         {
-            DetailLevel.Normal => $"Week {pct}%",
-            DetailLevel.ModeratelyNarrow or DetailLevel.Narrow => $"Wk {pct}%",
+            DetailLevel.Normal => $"Weekly Usage {pct}%",
+            DetailLevel.ModeratelyNarrow => $"Weekly {pct}%",
+            DetailLevel.Narrow => $"Wk {pct}%",
             _ => $"W{pct}%",
         };
         return Ansi.Wrap(text, ContextComponent.SeverityColor(pct, s), s.UseColor);
